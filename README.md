@@ -11,7 +11,7 @@
 
 ## Description
 
-RFdiffusion is an open source method for structure generation, with or without conditional information (a motif, target etc). It can perform a whole range of protein design challenges as we have outlined in [the RFdiffusion paper](https://www.biorxiv.org/content/10.1101/2022.12.09.519842v1). RFdiffusion은 조건부 정보(모티프, 타겟 등) 유무에 관계없이 구조를 생성하는 오픈소스 방법으로 RFdiffusion 논문 에서 설명한 바와 같이 다양한 단백질 설계 과제를 수행
+RFdiffusion은 조건부 정보(모티프, 타겟 등) 유무에 관계없이 구조를 생성하는 오픈소스 방법으로 RFdiffusion 논문 [the RFdiffusion paper](https://www.biorxiv.org/content/10.1101/2022.12.09.519842v1). 에서 설명한 바와 같이 다양한 단백질 설계 과제를 수행
 
 **Things Diffusion can do**
 - Motif Scaffolding ● 모티프 스캐폴딩
@@ -56,18 +56,18 @@ RFdiffusion is an open source method for structure generation, with or without c
 
 # 1. Getting started / installation
 
-Thanks to Sergey Ovchinnikov, RFdiffusion is available as a [Google Colab Notebook](https://colab.research.google.com/github/sokrypton/ColabDesign/blob/v1.1.1/rf/examples/diffusion.ipynb) if you would like to run it there!
+Sergey Ovchinnikov가  RFdiffusion 을 이용할 수 있도록 만듬 [Google Colab Notebook](https://colab.research.google.com/github/sokrypton/ColabDesign/blob/v1.1.1/rf/examples/diffusion.ipynb) 원하면 여기서 시도 해보기! 
 
-We strongly recommend reading this README carefully before getting started with RFdiffusion, and working through some of the examples in the Colab Notebook.
+RFdiffusion을 시작하기 전에 REDME을 주의 깊게 읽고, Colab Notebook의 몇가지 예시를 살펴보는 것을 권장
 
-If you want to set up RFdiffusion locally, follow the steps below:
+RFdiffusion을 로컬로 설정하려면 아래 단계를 따르기:
 
-To get started using RFdiffusion, clone the repo:
+RFdiffusion을 사용하기 위해 저장소를 복제:
 ```
 git clone https://github.com/RosettaCommons/RFdiffusion.git
 ```
 
-You'll then need to download the model weights into the RFDiffusion directory.
+RFDiffusion directory에 모델 가중치를 다운로드드
 ```
 cd RFdiffusion
 mkdir models && cd models
@@ -89,9 +89,10 @@ wget http://files.ipd.uw.edu/pub/RFdiffusion/1befcb9b28e2f778f53d47f18b7597fa/RF
 
 ### 1.1 Conda Install SE3-Transformer
 
-Ensure that you have either [Anaconda or Miniconda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) installed.
+[Anaconda 또 Miniconda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) 가 설치되어있는지 확인하기, 설치가 안되어있다면 설치하기
 
-You also need to install [NVIDIA's implementation of SE(3)-Transformers](https://developer.nvidia.com/blog/accelerating-se3-transformers-training-using-an-nvidia-open-source-model-implementation/) Here is how to install the NVIDIA SE(3)-Transformer code:
+[NVIDIA의 implementation of SE(3)-Transformers](https://developer.nvidia.com/blog/accelerating-se3-transformers-training-using-an-nvidia-open-source-model-implementation/) 도 설치하기.
+SE(3)-Transformers를 설치하는 방법은 아래와 같음
 
 ```
 conda env create -f env/SE3nv.yml
@@ -100,33 +101,33 @@ conda activate SE3nv
 cd env/SE3Transformer
 pip install --no-cache-dir -r requirements.txt
 python setup.py install
-cd ../.. # change into the root directory of the repository
-pip install -e . # install the rfdiffusion module from the root of the repository
+cd ../.. # 저장소의 루트 디렉토리로 변경
+pip install -e . # 저장소 루트에서 rfdiffusion 모듈 설치
 ```
-Anytime you run diffusion you should be sure to activate this conda environment by running the following command:
+diffusion을 실행할 때마다 다음 명령어을 실행하여 conda 환경을 활성화해야 합니다:
 ```
 conda activate SE3nv
 ```
-Total setup should take less than 30 minutes on a standard desktop computer.
-Note: Due to the variation in GPU types and drivers that users have access to, we are not able to make one environment that will run on all setups. As such, we are only providing a yml file with support for CUDA 11.1 and leaving it to each user to customize it to work on their setups. This customization will involve changing the cudatoolkit and (possibly) the PyTorch version specified in the yml file.
+표준 데스크톱 컴퓨터의 총 설정 시간은 30분 미만이어야 합니다. 
+참고: 사용자가 접근할 수 있는 GPU 유형과 드라이버의 차이로 인해 모든 설정에서 실행될 하나의 환경을 만들 수 없습니다. 따라서 CUDA 11.1을 지원하는 yml 파일만 제공하고 각 사용자가 설정에 맞게 사용자 지정할 수 있도록 남겨두었습니다. 이 사용자 지정에는 yml 파일에 지정된 cudatoolkit 및 (아마도) PyTorch 버전을 변경하는 작업이 포함될 수 있습니다.
 
 ---
 
 ### 1.2 Get PPI Scaffold Examples
 
-To run the scaffolded protein binder design (PPI) examples, we have provided some example scaffold files (`examples/ppi_scaffolds_subset.tar.gz`).
-You'll need to untar this:
+scaffolded protein binder design (PPI) 예제를 실행하기 위해 몇 가지 예제 scaffold files (`examples/ppi_scaffolds_subset.tar.gz`)을 제공 했습니다.
+이 압축 파일을 풀어야 합니다:
 ```
 tar -xvf examples/ppi_scaffolds_subset.tar.gz -C examples/
 ```
 
-We will explain what these files are and how to use them in the Fold Conditioning section.
+이 파일들이 무엇인지와 사용 방법에 대해서는 Fold Conditioning section에서 설명하겠습니다.
 
 ----
 
 
 # 2. Usage
-In this section we will demonstrate how to run diffusion.
+이 부분에서는 diffusion을 실행하는 방법을 시연할 것입니다.
 
 
 
@@ -135,43 +136,44 @@ In this section we will demonstrate how to run diffusion.
 </p>
 
 
-### 2.1 Running the diffusion script
-The actual script you will execute is called `scripts/run_inference.py`. There are many ways to run it, governed by hydra configs.
-[Hydra configs](https://hydra.cc/docs/configure_hydra/intro/) are a nice way of being able to specify many different options, with sensible defaults drawn *directly* from the model checkpoint, so inference should always, by default, match training.
-What this means is that the default values in `config/inference/base.yml` might not match the actual values used during inference, with a specific checkpoint. This is all handled under the hood.
+### 2.1 Running the diffusion script 
+실제 스크립트를 실행할 스크립트는 `scripts/run_inference.py`라고 합니다. 이를 실행하는 방법에는 여러 가지가 있으며, hydra configs에 의해 제어됩니다.
+[Hydra configs](https://hydra.cc/docs/configure_hydra/intro/) 는 model checkpoint에서 *직접*가져온 합리적인 기본값으로 다양한 옵션을 지정할 수 있는 좋은 방법 입니다. 따라서 inference 은 항상 기본적으로 training과 일치해야 합니다.
+즉, `config/inference/base.yml` 의 기본값이 inference 주에 사용된 실제 값과 특정 checkpoint와 일치하지 않을 수 있습니다. 이 모든것은 background에서 비밀리에 처리됩니다.
 
 ---
-### 2.2 Basic execution - an unconditional monomer
+### 2.2 Basic execution - an unconditional monomer 기본 실행 - 무조건 단량체
 <img src="./img/cropped_uncond.png" alt="alt text" width="400px" align="right"/>
 
-Let's first look at how you would do unconditional design of a protein of length 150aa.
-For this, we just need to specify three things:
-1. The length of the protein
-2. The location where we want to write files to
-3. The number of designs we want
+먼저 길이 150aa의 단백질을 무조건적으로 설계하는 방법을 살펴보겠습니다. 
+이를 위해 세 가지만 지정하면 됩니다:
+1. 단백질의 길이
+2. 파일을 작성할 위치
+3. 우리가 원하는 디자인의 수
 
 ```
 ./scripts/run_inference.py 'contigmap.contigs=[150-150]' inference.output_prefix=test_outputs/test inference.num_designs=10
 ```
 
-Let's look at this in detail.
-Firstly, what is `contigmap.contigs`?
-Hydra configs tell the inference script how it should be run. To keep things organised, the config has different sub-configs, one of them being `contigmap`, which pertains to everything related to the contig string (that defines the protein being built).
-Take a look at the config file if this isn't clear: `configs/inference/base.yml`
-Anything in the config can be overwritten manually from the command line. You could, for example, change how the diffuser works:
+자세히 살펴보도록 합시다
+먼저 `contigmap.contigs`란 무엇일까?
+Hydra configs는 inference script에 실행 방법을 알려줍니다.
+구성을 체계적으로 유지하기 위해 구성에는 다양한 하위 구성 요소가 있으며, 그 중 하나는 contigmap으로,  contig 문자열(구축 중인 단백질을 정의하는)과 관련된 모든 것과 관련이 있습니다. 
+명확하지 않은 경우 구성 파일을 살펴보세요: configs/inference/base.yml. 구성의 모든 항목은 명령줄에서 수동으로 덮어쓸 수 있습니다. 예를 들어, diffuser의 작동 방식을 변경할 수 있습니다: 
 ```
 diffuser.crd_scale=0.5
 ```
-... but don't do this unless you really know what you're doing!!
+... 하지만 당신이 정말로 무엇을 하고 있는지 알지 못하면 이렇게 하지 마세요!!
 
 
-Now, what does `'contigmap.contigs=[150-150]'` mean?
-To those who have used RFjoint inpainting, this might look familiar, but a little bit different. Diffusion, in fact, uses the identical 'contig mapper' as inpainting, except that, because we're using hydra, we have to give this to the model in a different way. The contig string has to be passed as a single-item in a list, rather than as a string, for hydra reasons and the entire argument MUST be enclosed in `''` so that the commandline does not attempt to parse any of the special characters.
+이제 `'contigmap.contigs=[150-150]'`은 무엇을 의미하나요?
+RFjoint inpainting을 사용해 보신 분들에게는 익수하게 보일 수 있지만 조금은 다릅니다.
+Diffusion은 사실 inpainting과 같은 'contig mapper'를 사용하지만, 우리는 hydra를 사용하기 때문에, model에게 다른 방식으로 전달해야 한다는 점 때문에 그렇습니다.
+hydra 이유로 인해 contig 문자열은 문자열이 아닌 목록의 단일 항복으로 전달되어야 하며, 명령줄이 특수문자를 구문분석하려고 시도하지 않도록 전체 인수는 `''` 안에 포함되어야 합니다.
 
-The contig string allows you to specify a length range, but here, we just want a protein of 150aa in length, so you just specify [150-150]
-This will then run 10 diffusion trajectories, saving the outputs to your specified output folder.
+contig 문자열을 사용하면 생산 단백질의 길이 범위를 지정할 수 있지만, 여기서는 길이가 150aa인 단백질만 필요하므로[150-150]을 지정하기만 하면 10개의 diffusion 경로가 실행되어 지정된 출력폴더(outputs folder)에 저장 됩니다.
 
-NB the first time you run RFdiffusion, it will take a while 'Calculating IGSO3'. Once it has done this, it'll be cached for future reference though! For an additional example of unconditional monomer generation, take a look at `./examples/design_unconditional.sh` in the repo! 
+RFdiffusion을 처음 실행할 때는 'Calculating IGSO3'에 시간이 좀 걸릴 것입니다. 일단 이 작업을 완료하면 나중에 참조할 수 있도록  캐시가 저장될것입니다. monomer generation의 추가 예시를 보려면 repo에서 `./examples/design_unconditional.sh` 를 확인해 보세요!
 
 ---
 ### 2.3 Motif Scaffolding
@@ -180,12 +182,16 @@ NB the first time you run RFdiffusion, it will take a while 'Calculating IGSO3'.
   <img src="./img/motif.png" alt="alt text" width="700px" align="middle"/>
 </p>
 -->
-RFdiffusion can be used to scaffold motifs, in a manner akin to [Constrained Hallucination and RFjoint Inpainting](https://www.science.org/doi/10.1126/science.abn2100#:~:text=The%20binding%20and%20catalytic%20functions%20of%20proteins%20are,the%20fold%20or%20secondary%20structure%20of%20the%20scaffold.). In general, RFdiffusion significantly outperforms both Constrained Hallucination and RFjoint Inpainting.
+RFdiffusion은 [Constrained Hallucination 및 RFjoint Inpainting](https://www.science.org/doi/10.1126/science.abn2100#:~:text=The%20binding%20and%20catalytic%20functions%20of%20proteins%20are,the%20fold%20or%20secondary%20structure%20of%20the%20scaffold.)와 유사한 방식으로 motif를 scaffold하는데 사용할수 있습니다.
+일반적으로, RFdiffusion은 Constrained Hallucination 과 RFjoint Inpainting보다 성능이 훨씬 좋습니다.
 <p align="center">
   <img src="./img/motif.png" alt="alt text" width="700px" align="middle"/>
 </p>
 
-When scaffolding protein motifs, we need a way of specifying that we want to scaffold some particular protein input (one or more segments from a `.pdb` file), and to be able to specify how we want these connected, and by how many residues, in the new scaffolded protein. What's more, we want to be able to sample different lengths of connecting protein, as we generally don't know *a priori* precisely how many residues we'll need to best scaffold a motif. This job of specifying inputs is handled by contigs, governed by the contigmap config in the hydra config. For those familiar with Constrained Hallucination or RFjoint Inpainting, the logic is very similar.
+단백질 motif를 scaffolding 할 때 특정 단백질 입력(inputs)(`.pdb` file 파일에서 하나 이상의 segments)을 scaffolding하고, 새로운 scaffolding된 단백질에서 이러한 연결 방법과 잔기(residues) 수를 지정할 수 있는 방법이 필요합니다. 
+게다가 우리는 일반적으로 motif를 최적화 하기 위해 얼마나 많은 잔기가 필요한지 정확히 알지 못하기 때문에 다양한 길이의 connecting protein을 sampling할 수 있기를 원합니다.
+입력(inputs)을 지정하는 이 작업은 hydra config의 contigmap config에 제어되는 contigs에 의해 처리됩니다.
+Constrained Hallucination이나 RFjoint Inpainting과 이 logic은 매우 유사합니다.
 Briefly:
 - Anything prefixed by a letter indicates that this is a motif, with the letter corresponding to the chain letter in the input pdb files. E.g. A10-25 pertains to residues ('A',10),('A',11)...('A',25) in the corresponding input pdb
 - Anything not prefixed by a letter indicates protein *to be built*. This can be input as a length range. These length ranges are randomly sampled each iteration of RFdiffusion inference. 
