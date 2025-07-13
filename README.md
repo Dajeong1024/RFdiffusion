@@ -11,48 +11,50 @@
 
 ## Description
 
-RFdiffusion is an open source method for structure generation, with or without conditional information (a motif, target etc). It can perform a whole range of protein design challenges as we have outlined in [the RFdiffusion paper](https://www.biorxiv.org/content/10.1101/2022.12.09.519842v1).
+RFdiffusion is an open source method for structure generation, with or without conditional information (a motif, target etc). It can perform a whole range of protein design challenges as we have outlined in [the RFdiffusion paper](https://www.biorxiv.org/content/10.1101/2022.12.09.519842v1). RFdiffusion은 조건부 정보(모티프, 타겟 등) 유무에 관계없이 구조를 생성하는 오픈소스 방법으로 RFdiffusion 논문 에서 설명한 바와 같이 다양한 단백질 설계 과제를 수행
 
 **Things Diffusion can do**
-- Motif Scaffolding
-- Unconditional protein generation
-- Symmetric unconditional generation (cyclic, dihedral and tetrahedral symmetries currently implemented, more coming!)
-- Symmetric motif scaffolding
-- Binder design
-- Design diversification ("partial diffusion", sampling around a design)
-
+- Motif Scaffolding ● 모티프 스캐폴딩
+- Unconditional protein generation ● 무조건 단백질 생성
+- Symmetric unconditional generation ● 대칭적 무조건 생성 (cyclic, dihedral and tetrahedral symmetries currently implemented, more coming!)
+- Symmetric motif scaffolding ● 대칭 모티브 스캐폴딩
+- Binder design ● 바인더 디자인
+- Design diversification ("partial diffusion", sampling around a design) ● 디자인 다각화("부분 확산", 디자인을 중심으로 샘플링)
 ----
 
-# Table of contents
+# 0. Table of contents
 
 - [RF*diffusion*](#rfdiffusion)
   - [Description](#description)
 - [Table of contents](#table-of-contents)
 - [Getting started / installation](#getting-started--installation)
-    - [Conda Install SE3-Transformer](#conda-install-se3-transformer)
-    - [Get PPI Scaffold Examples](#get-ppi-scaffold-examples)
-- [Usage](#usage)
-    - [Running the diffusion script](#running-the-diffusion-script)
-    - [Basic execution - an unconditional monomer](#basic-execution---an-unconditional-monomer)
-    - [Motif Scaffolding](#motif-scaffolding)
-    - [The "active site" model holds very small motifs in place](#the-active-site-model-holds-very-small-motifs-in-place)
-    - [The `inpaint_seq` flag](#the-inpaint_seq-flag)
-    - [A note on `diffuser.T`](#a-note-on-diffusert)
-    - [Partial diffusion](#partial-diffusion)
-    - [Binder Design](#binder-design)
-    - [Practical Considerations for Binder Design](#practical-considerations-for-binder-design)
-    - [Fold Conditioning](#fold-conditioning)
-    - [Generation of Symmetric Oligomers](#generation-of-symmetric-oligomers)
-    - [Using Auxiliary Potentials](#using-auxiliary-potentials)
-    - [Symmetric Motif Scaffolding.](#symmetric-motif-scaffolding)
-    - [RFpeptides macrocycle design](#macrocyclic-peptide-design-with-rfpeptides)
-    - [A Note on Model Weights](#a-note-on-model-weights)
+    - [Conda Install SE3-Transformer](#conda-install-se3-transformer) ☞ Conda SE3-Transformer 설치
+    - [Get PPI Scaffold Examples](#get-ppi-scaffold-examples) ☞  PPI 스캐폴드 예시 보기
+- [Usage](#usage) 사용법
+    - [Running the diffusion script](#running-the-diffusion-script) ☞ 확산 스크립트 실행
+    - [Basic execution - an unconditional monomer](#basic-execution---an-unconditional-monomer) ☞ 기본 실행 - 무조건 모노머
+    - [Motif Scaffolding](#motif-scaffolding) ☞ 모티프 스캐폴딩
+    - [The "active site" model holds very small motifs in place](#the-active-site-model-holds-very-small-motifs-in-place) 
+       ☞ "활성 사이트" 모델은 매우 작은 모티프를 제자리에 고정
+    - [The `inpaint_seq` flag](#the-inpaint_seq-flag) ☞ 깃발inpaint_seq​
+    - [A note on `diffuser.T`](#a-note-on-diffusert) ☞ diffuser.T에 대한 참고사항
+    - [Partial diffusion](#partial-diffusion) ☞ 부분 확산
+    - [Binder Design](#binder-design) ☞ 바인더 디자인
+    - [Practical Considerations for Binder Design](#practical-considerations-for-binder-design) 
+       ☞ 바인더 디자인을 위한 실용적인 고려 사항
+    - [Fold Conditioning](#fold-conditioning) ☞ 폴드 컨디셔닝
+    - [Generation of Symmetric Oligomers](#generation-of-symmetric-oligomers) ☞ 대칭 올리고머 생성
+    - [Using Auxiliary Potentials](#using-auxiliary-potentials) ☞ 보조 전위 사용 
+    - [Symmetric Motif Scaffolding.](#symmetric-motif-scaffolding) ☞ 대칭 모티브 스캐폴딩.
+    - [RFpeptides macrocycle design](#macrocyclic-peptide-design-with-rfpeptides) ☞ RF펩타이드 거대고리 디자인
+    - [A Note on Model Weights](#a-note-on-model-weights) ☞ 모델 가중치에 대한 참고 사항
     - [Things you might want to play with at inference time](#things-you-might-want-to-play-with-at-inference-time)
-    - [Understanding the output files](#understanding-the-output-files)
-    - [Docker](#docker)
-    - [Conclusion](#conclusion)
+       ☞ 추론 시간에 가지고 놀고 싶은 것들
+    - [Understanding the output files](#understanding-the-output-files) ☞ 출력 파일 이해
+    - [Docker](#docker) ☞ 도커
+    - [Conclusion](#conclusion) ☞ 결론
 
-# Getting started / installation
+# 1. Getting started / installation
 
 Thanks to Sergey Ovchinnikov, RFdiffusion is available as a [Google Colab Notebook](https://colab.research.google.com/github/sokrypton/ColabDesign/blob/v1.1.1/rf/examples/diffusion.ipynb) if you would like to run it there!
 
@@ -85,7 +87,7 @@ wget http://files.ipd.uw.edu/pub/RFdiffusion/1befcb9b28e2f778f53d47f18b7597fa/RF
 ```
 
 
-### Conda Install SE3-Transformer
+### 1.1 Conda Install SE3-Transformer
 
 Ensure that you have either [Anaconda or Miniconda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) installed.
 
@@ -110,7 +112,7 @@ Note: Due to the variation in GPU types and drivers that users have access to, w
 
 ---
 
-### Get PPI Scaffold Examples
+### 1.2 Get PPI Scaffold Examples
 
 To run the scaffolded protein binder design (PPI) examples, we have provided some example scaffold files (`examples/ppi_scaffolds_subset.tar.gz`).
 You'll need to untar this:
@@ -123,7 +125,7 @@ We will explain what these files are and how to use them in the Fold Conditionin
 ----
 
 
-# Usage
+# 2. Usage
 In this section we will demonstrate how to run diffusion.
 
 
@@ -133,13 +135,13 @@ In this section we will demonstrate how to run diffusion.
 </p>
 
 
-### Running the diffusion script
+### 2.1 Running the diffusion script
 The actual script you will execute is called `scripts/run_inference.py`. There are many ways to run it, governed by hydra configs.
 [Hydra configs](https://hydra.cc/docs/configure_hydra/intro/) are a nice way of being able to specify many different options, with sensible defaults drawn *directly* from the model checkpoint, so inference should always, by default, match training.
 What this means is that the default values in `config/inference/base.yml` might not match the actual values used during inference, with a specific checkpoint. This is all handled under the hood.
 
 ---
-### Basic execution - an unconditional monomer
+### 2.2 Basic execution - an unconditional monomer
 <img src="./img/cropped_uncond.png" alt="alt text" width="400px" align="right"/>
 
 Let's first look at how you would do unconditional design of a protein of length 150aa.
@@ -172,7 +174,7 @@ This will then run 10 diffusion trajectories, saving the outputs to your specifi
 NB the first time you run RFdiffusion, it will take a while 'Calculating IGSO3'. Once it has done this, it'll be cached for future reference though! For an additional example of unconditional monomer generation, take a look at `./examples/design_unconditional.sh` in the repo! 
 
 ---
-### Motif Scaffolding
+### 2.3 Motif Scaffolding
 <!--
 <p align="center">
   <img src="./img/motif.png" alt="alt text" width="700px" align="middle"/>
@@ -200,11 +202,11 @@ Look at this carefully. `/0 ` is the indicator that we want a chain break. NOTE,
 
 An example of motif scaffolding can be found in `./examples/design_motifscaffolding.sh`.
 
-### The "active site" model holds very small motifs in place
+### 2.4 The "active site" model holds very small motifs in place
 In the RFdiffusion preprint we noted that for very small motifs, RFdiffusion has the tendency to not keep them perfectly fixed in the output. Therefore, for scaffolding minimalist sites such as enzyme active sites, we fine-tuned RFdiffusion on examples similar to these tasks, allowing it to hold smaller motifs better in place, and better generate *in silico* successes. If your input functional motif is very small, we reccomend using this model, which can easily be specified using the following syntax: 
 `inference.ckpt_override_path=models/ActiveSite_ckpt.pt`
 
-### The `inpaint_seq` flag
+### 2.5 The `inpaint_seq` flag
 For those familiar with RFjoint Inpainting, the contigmap.inpaint_seq input is equivalent. The idea is that often, when, for example, fusing two proteins, residues that were on the surface of a protein (and are therefore likely polar), now need to be packed into the 'core' of the protein. We therefore want them to become hydrophobic residues. What we can do, rather than directly mutating them to hydrophobics, is to mask their sequence identity, and allow RFdiffusion to implicitly reason over their sequence, and better pack against them. This requires a different model than the 'base' diffusion model, that has been trained to understand this paradigm, but this is automatically handled by the inference script (you don't need to do anything).
 
 To specify amino acids whose sequence should be hidden, use the following syntax:
@@ -215,11 +217,11 @@ Here, we're masking the residue identity of residue A1, and all residues between
 
 An example of executing motif scaffolding with the `contigmap.inpaint_seq` flag is located in `./examples/design_motifscaffolding_inpaintseq.sh`
 
-### A note on `diffuser.T`
+### 2.6 A note on `diffuser.T`
 RFdiffusion was originally trained with 200 discrete timesteps. However, recent improvements have allowed us to reduce the number of timesteps we need to use at inference time. In many cases, running with as few as approximately 20 steps provides outputs of equivalent *in silico* quality to running with 200 steps (providing a 10X speedup). The default is now set to 50 steps. Noting this is important for understanding the partial diffusion, described below. 
 
 ---
-### Partial diffusion
+### 2.7 Partial diffusion
 
 Something we can do with diffusion is to partially noise and de-noise a structure, to get some diversity around a general fold. This can work really nicely (see [Vazquez-Torres et al., BioRxiv 2022](https://www.biorxiv.org/content/10.1101/2022.12.10.519862v4.abstract)).
 This is specified by using the diffuser.parial_T input, and setting a timestep to 'noise' to. 
@@ -249,7 +251,7 @@ Note that the provide_seq option requires using a different model checkpoint, bu
 An example of partial diffusion with providing sequence in diffused regions can be found in `./examples/design_partialdiffusion_withseq.sh`. The same example specifying multiple sequence ranges can be found in `./examples/design_partialdiffusion_multipleseq.sh`.
 
 ---
-### Binder Design 
+### 2.8 Binder Design 
 Hopefully, it's now obvious how you might make a binder with diffusion! Indeed, RFdiffusion shows excellent *in silico* and experimental ability to design *de novo* binders. 
 
 <p align="center">
@@ -278,35 +280,35 @@ An example of binder design with RFdiffusion can be found in `./examples/design_
 
 ---
 
-## Practical Considerations for Binder Design
+## 3. Practical Considerations for Binder Design
 
 RFdiffusion is an extremely powerful binder design tool but it is not magic. In this section we will walk through some common pitfalls in RFdiffusion binder design and offer advice on how to get the most out of this method.
 
-### Selecting a Target Site
+### 3.1 Selecting a Target Site
 Not every site on a target protein is a good candidate for binder design. For a site to be an attractive candidate for binding it should have >~3 hydrophobic residues for the binder to interact with. Binding to charged polar sites is still quite hard. Binding to sites with glycans close to them is also hard since they often become ordered upon binding and you will take an energetic hit for that. Historically, binder design has also avoided unstructured loops, it is not clear if this is still a requirement as RFdiffusion has been used to bind unstructured peptides which share a lot in common with unstructured loops.
 
-### Truncating your Target Protein
+### 3.2 Truncating your Target Protein
 RFdiffusion scales in runtime as O(N^2) where N is the number of residues in your system. As such, it is a very good idea to truncate large targets so that your computations are not unnecessarily	 expensive. RFdiffusion and all downstream steps (including AF2) are designed to allow for a truncated target. Truncating a target is an art. For some targets, such as multidomain extracellular membranes, a natural truncation point is where two domains are joined by a flexible linker. For other proteins, such as virus spike proteins, this truncation point is less obvious. Generally you want to preserve secondary structure and introduce as few chain breaks as possible. You should also try to leave ~10A of target protein on each side of your intended target site. We recommend using PyMol to truncate your target protein.
 
-### Picking Hotspots
+### 3.3 Picking Hotspots
 Hotspots are a feature that we integrated into the model to allow for the control of the site on the target which the binder will interact with. In the paper we define a hotspot as a residue on the target protein which is within 10A Cbeta distance of the binder. Of all of the hotspots which are identified on the target 0-20% of these hotspots are actually provided to the model and the rest are masked. This is important for understanding how you should pick hotspots at inference time.; the model is expecting to have to make more contacts than you specify. We normally recommend between 3-6 hotspots, you should run a few pilot runs before generating thousands of designs to make sure the number of hotspots you are providing will give results you like.
 
 If you have run the previous PatchDock RifDock binder design pipeline, for the RFdiffusion paper we chose our hotspots to be the PatchDock residues of the target.
 
-### Binder Design Scale
+### 3.4 Binder Design Scale
 In the paper, we generated ~10,000 RFdiffusion binder backbones for each target. From this set of backbones we then generated two sequences per backbone using ProteinMPNN-FastRelax (described below). We screened these ~20,000 designs using AF2 with initial guess and target templating (also described below).
 
 Given the high success rates we observed in the paper, for some targets it may be sufficient to only generate ~1,000 RFdiffusion backbones in a campaign. What you want is to get enough designs that pass pAE_interaction < 10 (described more in Binder Design Filtering section) such that you are able to fill a DNA order with these successful designs. We have found that designs that do not pass pAE_interaction < 10 are not worth ordering since they will likely not work experimentally.
 
-### Sequence Design for Binders
+### 3.5 Sequence Design for Binders
 You may have noticed that the binders designed by RFdiffusion come out with a poly-Glycine sequence. This is not a bug. RFdiffusion is a backbone-generation model and does not generate sequence for the designed region, therefore, another method must be used to assign a sequence to the binders. In the paper we use the ProteinMPNN-FastRelax protocol to do sequence design. We recommend that you do this as well.  The code for this protocol can be found in [this GitHub repo](https://github.com/nrbennet/dl_binder_design). While we did not find the FastRelax part of the protocol to yield the large in silico success rate improvements that it yielded with the RifDock-generated docks, it is still a good way to increase your number of shots-on-goal for each (computationally expensive) RFdiffusion backbone. If you would prefer to simply run ProteinMPNN on your binders without the FastRelax step, that will work fine but will be more computationally expensive.
 
-### Binder Design Filtering
+### 3.6 Binder Design Filtering
 One of the most important parts of the binder design pipeline is a filtering step to evaluate if your binders are actually predicted to work. In the paper we filtered using AF2 with an initial guess and target templating, scripts for this protocol are available [here](https://github.com/nrbennet/dl_binder_design). We have found that filtering at pae_interaction < 10 is a good predictor of a binder working experimentally.
 
 ---
 
-### Fold Conditioning 
+### 3.7 Fold Conditioning 
 Something that works really well is conditioning binder design (or monomer generation) on particular topologies. This is achieved by providing (partial) secondary structure and block adjacency information (to a model that has been trained to condition on this). 
 <p align="center">
   <img src="./img/fold_cond.png" alt="alt text" width="950px" align="middle"/>
