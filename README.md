@@ -286,35 +286,35 @@ An example of binder design with RFdiffusion can be found in `./examples/design_
 
 ---
 
-## 3. Practical Considerations for Binder Design
+## 2.8.1. Practical Considerations for Binder Design
 
 RFdiffusion is an extremely powerful binder design tool but it is not magic. In this section we will walk through some common pitfalls in RFdiffusion binder design and offer advice on how to get the most out of this method.
 
-### 3.1 Selecting a Target Site
+### 2.8.1.1 Selecting a Target Site
 Not every site on a target protein is a good candidate for binder design. For a site to be an attractive candidate for binding it should have >~3 hydrophobic residues for the binder to interact with. Binding to charged polar sites is still quite hard. Binding to sites with glycans close to them is also hard since they often become ordered upon binding and you will take an energetic hit for that. Historically, binder design has also avoided unstructured loops, it is not clear if this is still a requirement as RFdiffusion has been used to bind unstructured peptides which share a lot in common with unstructured loops.
 
-### 3.2 Truncating your Target Protein
+### 2.8.1.2 Truncating your Target Protein
 RFdiffusion scales in runtime as O(N^2) where N is the number of residues in your system. As such, it is a very good idea to truncate large targets so that your computations are not unnecessarily	 expensive. RFdiffusion and all downstream steps (including AF2) are designed to allow for a truncated target. Truncating a target is an art. For some targets, such as multidomain extracellular membranes, a natural truncation point is where two domains are joined by a flexible linker. For other proteins, such as virus spike proteins, this truncation point is less obvious. Generally you want to preserve secondary structure and introduce as few chain breaks as possible. You should also try to leave ~10A of target protein on each side of your intended target site. We recommend using PyMol to truncate your target protein.
 
-### 3.3 Picking Hotspots
+### 2.8.1.3 Picking Hotspots
 Hotspots are a feature that we integrated into the model to allow for the control of the site on the target which the binder will interact with. In the paper we define a hotspot as a residue on the target protein which is within 10A Cbeta distance of the binder. Of all of the hotspots which are identified on the target 0-20% of these hotspots are actually provided to the model and the rest are masked. This is important for understanding how you should pick hotspots at inference time.; the model is expecting to have to make more contacts than you specify. We normally recommend between 3-6 hotspots, you should run a few pilot runs before generating thousands of designs to make sure the number of hotspots you are providing will give results you like.
 
 If you have run the previous PatchDock RifDock binder design pipeline, for the RFdiffusion paper we chose our hotspots to be the PatchDock residues of the target.
 
-### 3.4 Binder Design Scale
+### 2.8.1.4 Binder Design Scale
 In the paper, we generated ~10,000 RFdiffusion binder backbones for each target. From this set of backbones we then generated two sequences per backbone using ProteinMPNN-FastRelax (described below). We screened these ~20,000 designs using AF2 with initial guess and target templating (also described below).
 
 Given the high success rates we observed in the paper, for some targets it may be sufficient to only generate ~1,000 RFdiffusion backbones in a campaign. What you want is to get enough designs that pass pAE_interaction < 10 (described more in Binder Design Filtering section) such that you are able to fill a DNA order with these successful designs. We have found that designs that do not pass pAE_interaction < 10 are not worth ordering since they will likely not work experimentally.
 
-### 3.5 Sequence Design for Binders
+### 2.8.1.5 Sequence Design for Binders
 You may have noticed that the binders designed by RFdiffusion come out with a poly-Glycine sequence. This is not a bug. RFdiffusion is a backbone-generation model and does not generate sequence for the designed region, therefore, another method must be used to assign a sequence to the binders. In the paper we use the ProteinMPNN-FastRelax protocol to do sequence design. We recommend that you do this as well.  The code for this protocol can be found in [this GitHub repo](https://github.com/nrbennet/dl_binder_design). While we did not find the FastRelax part of the protocol to yield the large in silico success rate improvements that it yielded with the RifDock-generated docks, it is still a good way to increase your number of shots-on-goal for each (computationally expensive) RFdiffusion backbone. If you would prefer to simply run ProteinMPNN on your binders without the FastRelax step, that will work fine but will be more computationally expensive.
 
-### 3.6 Binder Design Filtering
+### 2.8.1.6 Binder Design Filtering
 One of the most important parts of the binder design pipeline is a filtering step to evaluate if your binders are actually predicted to work. In the paper we filtered using AF2 with an initial guess and target templating, scripts for this protocol are available [here](https://github.com/nrbennet/dl_binder_design). We have found that filtering at pae_interaction < 10 is a good predictor of a binder working experimentally.
 
 ---
 
-### 3.7 Fold Conditioning 
+### 2.9 Fold Conditioning 
 Something that works really well is conditioning binder design (or monomer generation) on particular topologies. This is achieved by providing (partial) secondary structure and block adjacency information (to a model that has been trained to condition on this). 
 <p align="center">
   <img src="./img/fold_cond.png" alt="alt text" width="950px" align="middle"/>
@@ -398,7 +398,7 @@ See the example in `examples/design_ppi_flexible_peptide_with_secondarystructure
 
 ---
 
-### Generation of Symmetric Oligomers 
+### 2.10 Generation of Symmetric Oligomers 
 We're going to switch gears from discussing PPI and look at another task at which RFdiffusion performs well on: symmetric oligomer design. This is done by symmetrising the noise we sample at t=T, and symmetrising the input at every timestep. We have currently implemented the following for use (with the others coming soon!):
 - Cyclic symmetry
 - Dihedral symmetry
@@ -423,7 +423,7 @@ More examples of designing oligomers can be found here: `./examples/design_cycli
 
 ---
 
-### Using Auxiliary Potentials 
+### 2.11 Using Auxiliary Potentials 
 Performing diffusion with symmetrized noise may give you the idea that we could use other external interventions during the denoising process to guide diffusion. One such intervention that we have implemented is auxiliary potentials. Auxiliary potentials can be very useful for guiding the inference process. E.g. whereas in RFjoint inpainting, we have little/no control over the final shape of an output, in diffusion we can readily force the network to make, for example, a well-packed protein.
 This is achieved in the updates we make at each step.
 
@@ -447,7 +447,7 @@ We have already implemented several potentials but it is relatively straightforw
 
 ---
 
-### Symmetric Motif Scaffolding.  
+### 2.12 Symmetric Motif Scaffolding.  
 We can also combine symmetric diffusion with motif scaffolding to scaffold motifs symmetrically.
 Currently, we have one way for performing symmetric motif scaffolding. That is by specifying the position of the motif specified w.r.t. the symmetry axes.  
 
@@ -483,7 +483,7 @@ We have recently published the RFpeptides protocol for using RFdiffusion to desi
 examples/design_macrocyclic_monomer.sh
 examples/design_macrocyclic_binder.sh
 ```
-#### RFpeptides binder design
+#### 2.13 RFpeptides binder design
 <img src="./img/rfpeptides_binder.png" alt="alt text" width="1100" align="center"/>
 
 To design a macrocyclic peptide to bind a target, the flags needed are very similar to classic binder design, but with two additional flags: 
@@ -518,13 +518,13 @@ For monomer design, you can simply adjust the contigs to only contain a single g
 
 ---
 
-### A Note on Model Weights
+### 2.14 A Note on Model Weights
 
 Because of everything we want diffusion to be able to do, there is not *One Model To Rule Them All*. E.g., if you want to run with secondary structure conditioning, this requires a different model than if you don't. Under the hood, we take care of most of this by default - we parse your input and work out the most appropriate checkpoint.
 This is where the config setup is really useful. The exact model checkpoint used at inference contains in it all of the parameters is was trained with, so we can just populate the config file with those values, such that inference runs as designed.
 If you do want to specify a different checkpoint (if, for example, we train a new model and you want to test it), you just have to make sure it's compatible with what you're doing. E.g. if you try and give secondary structure features to a model that wasn't trained with them, it'll crash.
 
-### Things you might want to play with at inference time
+### 2.15 Things you might want to play with at inference time
 
 Occasionally, it might good to try an alternative model (for example the active site model, or the beta binder model). These can be specified with `inference.ckpt_override_path`. We do not recommend using these outside of the described use cases, however, as there is not a guarantee they will understand other kinds of inputs.
 
@@ -534,7 +534,7 @@ However, the parameters below are definitely worth exploring:
 -inference.final_step: This is when we stop the trajectory. We have seen that you can stop early, and the model is already making a good prediction of the final structure. This speeds up inference.
 -denoiser.noise_scale_ca and denoiser.noise_scale_frame: These can be used to reduce the noise used during sampling (as discussed for PPI above). The default is 1 (the same noise added at training), but this can be reduced to e.g. 0.5, or even 0. This actually improves the quality of models coming out of diffusion, but at the expense of diversity. If you're not getting any good outputs, or if your problem is very constrained, you could try reducing the noise. While these parameters can be changed independently (for translations and rotations), we recommend keeping them tied.
 
-### Understanding the output files
+### 2.16 Understanding the output files
 We output several different files.
 1. The `.pdb` file. This is the final prediction out of the model. Note that every designed residue is output as a glycine (as we only designed the backbone), and no sidechains are output. This is because, even though RFdiffusion conditions on sidechains in an input motif, there is no loss applied to these predictions, so they can't strictly be trusted.
 2. The `.trb` file. This contains useful metadata associated with that specific run, including the specific contig used (if length ranges were sampled), as well as the full config used by RFdiffusion. There are also a few other convenient items in this file:
@@ -544,7 +544,7 @@ We output several different files.
         - `inpaint_seq` - This details any residues that were masked during inference.
 3. Trajectory files. By default, we output the full trajectories into the `/traj/` folder. These files can be opened in pymol, as multi-step pdbs. Note that these are ordered in reverse, so the first pdb is technically the last (t=1) prediction made by RFdiffusion during inference. We include both the `pX0` predictions (what the model predicted at each timestep) and the `Xt-1` trajectories (what went into the model at each timestep).
 
-### Docker
+### 2.17 Docker
 
 We have provided a Dockerfile at `docker/Dockerfile` to help run RFDiffusion on HPC and other container orchestration systems. Follow these steps to build and run the container on your system:
 
@@ -571,7 +571,7 @@ docker run -it --rm --gpus all \
 
   This starts the `rfdiffusion` container, mounts the models, inputs, and outputs folders, passes all available GPUs, and then calls the `run_inference.py` script with the parameters specified.
 
-### Conclusion
+## 3. Conclusion
 
 We are extremely excited to share RFdiffusion with the wider scientific community. We expect to push some updates as and when we make sizeable improvements in the coming months, so do stay tuned. We realize it may take some time to get used to executing RFdiffusion with perfect syntax (sometimes Hydra is hard), so please don't hesitate to create GitHub issues if you need help, we will respond as often as we can. 
 
